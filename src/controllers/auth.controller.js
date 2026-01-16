@@ -44,6 +44,8 @@ export const login = async (req, res) =>
       return res.status(401).json({ message: "Invalid password" });
     }
 
+    console.log("JWT_SECRET from env =", process.env.JWT_SECRET);
+    
     const token = jwt.sign(
       {
         userId: user.UserId,
