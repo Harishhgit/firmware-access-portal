@@ -1,4 +1,5 @@
 import cors from "cors";
+import adminRoutes from "./routes/admin.routes.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 
 app.use("/auth", authRoutes);
 app.use("/test", testRoutes);
+app.use("/admin", adminRoutes);
 
 app.get("/health", (req, res) => 
 {
