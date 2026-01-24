@@ -24,7 +24,8 @@ export const createUser = async (req, res) => {
       .input("userId", sql.NVarChar, userId)
       .query(`SELECT * FROM Users WHERE UserId = @userId`);
 
-    if (checkUser.recordset.length > 0) {
+    if (checkUser.recordset.length > 0) 
+    {
       return res.status(409).json({ message: "User already exists" });
     }
 
@@ -58,7 +59,8 @@ export const createUser = async (req, res) => {
 /*
   2. GRANT ACCESS FOR 48 HOURS
 */
-export const grantAccess = async (req, res) => {
+export const grantAccess = async (req, res) => 
+{
   const { userId } = req.body;
 
   if (!userId) {
@@ -94,7 +96,9 @@ export const grantAccess = async (req, res) => {
       AccessExpiresAt: expiresAt
     });
 
-  } catch (err) {
+  } 
+  catch (err) 
+  {
     console.error("Grant access error:", err);
     res.status(500).json({ message: "Server error" });
   }
