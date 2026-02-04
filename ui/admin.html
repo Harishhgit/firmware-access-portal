@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <button id="logoutBtn">Logout</button>
+
+    <h2>User Management</h2>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Access Granted At</th>
+                <th>Access Expires At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="usersTable">
+            <!-- Users will be injected here -->
+        </tbody>
+    </table>
+
+    <script src="./js/admin.js"></script>
+</body>
+
+</html>

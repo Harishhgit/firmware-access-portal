@@ -103,3 +103,88 @@ export const grantAccess = async (req, res) =>
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const pool = getPool();
+
+    const result = await pool.request().query(`
+      SELECT 
+        UserId,
+        Role,
+        IsActive,
+        AccessGrantedAt,
+        AccessExpiresAt
+      FROM Users
+      ORDER BY UserId
+    `);
+
+    const users = result.recordset.map(user => {
+      let accessStatus = "NOT_GRANTED";
+
+      if (!user.IsActive) {
+        accessStatus = "INACTIVE";
+      } else if (user.AccessExpiresAt) {
+        accessStatus =
+          new Date() > new Date(user.AccessExpiresAt)
+            ? "EXPIRED"
+            : "ACTIVE";
+      }
+
+      return {
+        userId: user.UserId,
+        role: user.Role,
+        isActive: user.IsActive,
+        accessGrantedAt: user.AccessGrantedAt,
+        accessExpiresAt: user.AccessExpiresAt,
+        accessStatus
+      };
+    });
+
+    res.json(users);
+
+  } catch (err) {
+    console.error("Get users error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const revokeAccess = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId is required" });
+  }
+
+  try {
+    const pool = getPool();
+
+    const result = await pool.request()
+      .input("userId", sql.NVarChar, userId)
+      .query(`
+        UPDATE Users
+        SET 
+          AccessGrantedAt = NULL,
+          AccessExpiresAt = NULL
+        WHERE UserId = @userId AND IsActive = 1
+      `);
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({
+        message: "User not found or already inactive"
+      });
+    }
+
+    res.json({
+      message: "Access revoked successfully",
+      userId
+    });
+
+  } catch (err) {
+    console.error("Revoke access error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
