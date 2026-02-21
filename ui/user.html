@@ -8,18 +8,16 @@
 </head>
 
 <body>
-
-    <h1>User Dashboard</h1>
-
-    <button id="logoutBtn">Logout</button>
-
-    <div id="statusBox">
-        <p id="statusMessage">Checking access status...</p>
+    <div class="dashboard">
+        <div class="top-bar">
+            <h1>User Dashboard</h1>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+        <p id="statusMessage" class="user-status"></p>
+        <button id="downloadBtn" class="download-btn" disabled>
+            Download Firmware
+        </button>
     </div>
-
-    <button id="downloadBtn" disabled>
-        Download Firmware
-    </button>
 
     <script src="./js/user.js"></script>
 </body>

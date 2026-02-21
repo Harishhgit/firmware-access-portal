@@ -29,17 +29,22 @@ async function checkAccess() {
 
     const data = await response.json();
 
-    if (response.ok) {
+    if (response.ok) 
+    {
       statusMessage.textContent = "Access active. You can download firmware.";
       statusMessage.style.color = "green";
       downloadBtn.disabled = false;
-    } else {
+    } 
+    else 
+    {
       statusMessage.textContent = data.message || "Access denied";
       statusMessage.style.color = "red";
       downloadBtn.disabled = true;
     }
 
-  } catch (err) {
+  } 
+  catch (err) 
+  {
     statusMessage.textContent = "Server not reachable";
     statusMessage.style.color = "red";
   }

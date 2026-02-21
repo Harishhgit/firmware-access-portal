@@ -6,8 +6,10 @@ import { getPool } from "../config/db.js";
 
 const router = express.Router();
 
-router.get("/download", verifyToken, checkAccessWindow, async (req, res) => {
-    try {
+router.get("/download", verifyToken, checkAccessWindow, async (req, res) => 
+{
+    try 
+    {
       const pool = getPool();
       const userId = req.user.userId;
   
@@ -22,10 +24,40 @@ router.get("/download", verifyToken, checkAccessWindow, async (req, res) => {
   
       res.json({ message: "Firmware download allowed" });
   
-    } catch (err) {
+    } 
+    catch (err) 
+    {
       console.error("Firmware access log error:", err);
       res.status(500).json({ message: "Logging failed" });
     }
-  });
+});
+    
+
+router.get("/logs", verifyToken, async (req, res) => 
+{
+    try 
+    {
+      const pool = getPool();
+  
+      const result = await pool.request()
+        .query(`
+          SELECT TOP 50
+            UserId,
+            Endpoint,
+            AccessTime,
+            Status
+          FROM ApiAccessLogs
+          ORDER BY AccessTime DESC
+        `);
+  
+      res.json(result.recordset);
+  
+    } 
+    catch (err) 
+    {
+      console.error("Fetch logs error:", err);
+      res.status(500).json({ message: "Failed to fetch logs" });
+    }
+});
 
 export default router;

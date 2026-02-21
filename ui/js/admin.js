@@ -1,6 +1,5 @@
-// ===== Admin Dashboard Logic =====
+// ===== Admin Dashboard Logic (Stable Version) =====
 
-// Check authentication
 const token = localStorage.getItem("token");
 const role = localStorage.getItem("role");
 
@@ -11,6 +10,7 @@ if (!token || role !== "ADMIN") {
 // Elements
 const usersTable = document.getElementById("usersTable");
 const logoutBtn = document.getElementById("logoutBtn");
+const statusMessage = document.getElementById("statusMessage");
 
 // Logout
 logoutBtn.addEventListener("click", () => {
@@ -18,13 +18,14 @@ logoutBtn.addEventListener("click", () => {
   window.location.href = "login.html";
 });
 
-// Fetch and render users
+// Load users
 async function loadUsers() {
   try {
+    statusMessage.textContent = "Loading users...";
+
     const response = await fetch("http://localhost:3000/admin/users", {
-      method: "GET",
       headers: {
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
 
@@ -35,6 +36,13 @@ async function loadUsers() {
     const users = await response.json();
 
     usersTable.innerHTML = "";
+    statusMessage.textContent = "";
+
+    if (users.length === 0) {
+      usersTable.innerHTML =
+        `<tr><td colspan="6">No users found</td></tr>`;
+      return;
+    }
 
     users.forEach(user => {
       const row = document.createElement("tr");
@@ -42,11 +50,15 @@ async function loadUsers() {
       row.innerHTML = `
         <td>${user.userId}</td>
         <td>${user.role}</td>
-        <td>${user.accessStatus}</td>
+        <td class="status-{user.accessStatus}">${user.accessStatus} </td>
         <td>${formatDate(user.accessGrantedAt)}</td>
         <td>${formatDate(user.accessExpiresAt)}</td>
         <td>
-          ${renderActionButtons(user)}
+          ${
+            user.accessStatus === "ACTIVE"
+              ? `<button class="btn-revoke" onclick="revokeAccess('${user.userId}')">Revoke</button>`
+              : `<button class="btn-grant" onclick="grantAccess('${user.userId}')">Grant</button>`
+          }
         </td>
       `;
 
@@ -54,70 +66,42 @@ async function loadUsers() {
     });
 
   } catch (err) {
-    console.error("Admin load error:", err);
+    console.error(err);
+    statusMessage.textContent = "Failed to load users";
     usersTable.innerHTML =
-      `<tr><td colspan="6">Failed to load users</td></tr>`;
-  }
-}
-
-// Render action buttons
-function renderActionButtons(user) {
-  if (user.accessStatus === "ACTIVE") {
-    return `<button onclick="revokeAccess('${user.userId}')">Revoke</button>`;
-  } else {
-    return `<button onclick="grantAccess('${user.userId}')">Grant</button>`;
+      `<tr><td colspan="6">Error loading users</td></tr>`;
   }
 }
 
 // Grant access
 async function grantAccess(userId) {
-  try {
-    const response = await fetch("http://localhost:3000/admin/grant-access", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ userId })
-    });
+  await fetch("http://localhost:3000/admin/grant-access", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ userId })
+  });
 
-    if (!response.ok) {
-      throw new Error("Grant failed");
-    }
-
-    alert("Access granted");
-    loadUsers();
-
-  } catch (err) {
-    alert("Failed to grant access");
-  }
+  loadUsers();
 }
 
 // Revoke access
 async function revokeAccess(userId) {
-  try {
-    const response = await fetch("http://localhost:3000/admin/revoke-access", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ userId })
-    });
+  await fetch("http://localhost:3000/admin/revoke-access", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ userId })
+  });
 
-    if (!response.ok) {
-      throw new Error("Revoke failed");
-    }
-
-    alert("Access revoked");
-    loadUsers();
-
-  } catch (err) {
-    alert("Failed to revoke access");
-  }
+  loadUsers();
 }
 
-// Format date
+// Date formatter
 function formatDate(value) {
   if (!value) return "-";
   return new Date(value).toLocaleString();
@@ -125,3 +109,26 @@ function formatDate(value) {
 
 // Initial load
 loadUsers();
+
+
+/* function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main");
+
+  sidebar.classList.toggle("open");
+  main.classList.toggle("shift");
+} */
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+
+function toggleFirmwareMenu() {
+  const menu = document.getElementById("firmwareMenu");
+  const arrow = document.getElementById("fwArrow");
+
+  menu.classList.toggle("hidden");
+  arrow.textContent = menu.classList.contains("hidden") ? "▶" : "▼";
+}
+

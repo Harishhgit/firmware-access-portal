@@ -2,36 +2,115 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <meta charset="UTF-8" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
 <body>
 
-    <h1>Admin Dashboard</h1>
+    <!-- TOP BAR -->
+    <div class="header">
+        <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+        <span class="header-title">Firmware Access Portal</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
 
-    <button id="logoutBtn">Logout</button>
+    <!-- LAYOUT -->
+    <div class="layout">
 
-    <h2>User Management</h2>
+        <!-- SIDEBAR -->
+        <div id="sidebar" class="sidebar">
+            <ul>
+                <li id="menuDashboard" class="active">Dashboard</li>
+                <li id="menuUsers">User Management</li>
 
-    <table border="1" cellpadding="8" cellspacing="0">
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Access Granted At</th>
-                <th>Access Expires At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="usersTable">
-            <!-- Users will be injected here -->
-        </tbody>
-    </table>
+                <li onclick="toggleFirmwareMenu()">
+                    Firmware <span id="fwArrow">▶</span>
+                    <ul id="firmwareMenu" class="submenu hidden">
+                        <li id="menuFwDownload">Download</li>
+                        <li id="menuFwLogs">Access Logs</li>
+                    </ul>
+                </li>
 
-    <script src="./js/admin.js"></script>
+                <li id="menuSettings">Settings</li>
+            </ul>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div id="main" class="main">
+            <h2>Dashboard</h2>
+            <p>Select an option from the sidebar.</p>
+        </div>
+
+    </div>
+
+    <!-- TEMPLATES -->
+    <template id="tpl-dashboard">
+        <h2>Dashboard</h2>
+        <p>Welcome to Firmware Access Portal.</p>
+    </template>
+
+    <!-- <template id="tpl-users">
+        <h2>User Management</h2>
+        <div id="usersContainer"></div>
+    </template> -->
+
+    <template id="tpl-users">
+        <h2>User Management</h2>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Access Granted</th>
+                    <th>Access Expires</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="usersTable">
+                <tr>
+                    <td colspan="6" class="table-placeholder">Loading users...</td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+    <template id="tpl-fw-download">
+        <h2>Firmware Download</h2>
+        <p>Download firmware packages.</p>
+    </template>
+
+    <template id="tpl-fw-logs">
+        <h2>Firmware Access Logs</h2>
+        <p>View firmware access history.</p>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Endpoint</th>
+                    <th>Access Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="logsTable">
+                <tr>
+                    <td colspan="4" class="table-placeholder">Loading logs...</td>
+                    <!-- <td colspan="4">Loading logs...</td> -->
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+    <template id="tpl-settings">
+        <h2>Settings</h2>
+        <p>Admin configuration options.</p>
+    </template>
+
+
+    <script src="./js/layout.js"></script>
 </body>
 
 </html>

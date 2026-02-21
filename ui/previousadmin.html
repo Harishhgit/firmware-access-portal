@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <div class="header">
+        <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+        <span class="header-title">Firmware Access Portal</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div id="sidebar" class="sidebar">
+            <ul>
+                <li class="active">Dashboard</li>
+                <li>User Management</li>
+                <li onclick="toggleFirmwareMenu()">
+                    Firmware <span id="fwArrow">▶</span>
+                    <ul id="firmwareMenu" class="submenu hidden">
+                        <li>Download</li>
+                        <li>Access Logs</li>
+                    </ul>
+                </li>
+                <li>Settings</li>
+            </ul>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div id="main" class="main">
+            <h2>Dashboard</h2>
+            <p>Select an option from the sidebar.</p>
+        </div>
+
+    </div>
+    <script src="./js/layout.js"></script>
+</body>
+
+</html>
