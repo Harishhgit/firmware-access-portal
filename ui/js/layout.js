@@ -157,10 +157,10 @@ async function loadUsers()
         <td>${u.accessGrantedAt || "-"}</td>
         <td>${u.accessExpiresAt || "-"}</td>
         <td>
-            <button class="btn-grant" data-userid="${u.UserId}">Grant</button>
-            <button class="btn-revoke" data-userid="${u.UserId}">Revoke</button>
-            <button class="btn-edit" data-userid="${u.UserId}">Edit</button>
-            <button class="btn-delete" data-userid="${u.UserId}">Delete</button>
+            <button class="btn-grant" data-userid="${u.userId}">Grant</button>
+            <button class="btn-revoke" data-userid="${u.userId}">Revoke</button>
+            <button class="btn-edit" data-userid="${u.userId}">Edit</button>
+            <button class="btn-delete" data-userid="${u.userId}">Delete</button>
         </td>
       </tr>
     `).join("");
@@ -192,6 +192,7 @@ function attachUserActionEvents()
 
   document.querySelectorAll(".btn-delete").forEach(btn => {
     btn.addEventListener("click", () => {
+      console.log("btn.dataset.userid",btn.dataset.userid,btn.dataset.UserId);
       deleteUser(btn.dataset.userid);
     });
   });
@@ -230,7 +231,8 @@ async function revokeAccess(userId)
   loadUsers();
 }
 
-async function revokeAccess(userId) {
+async function revokeAccess(userId) 
+{
   const token = localStorage.getItem("token");
 
   await fetch("/admin/revoke-access", {
@@ -247,7 +249,25 @@ async function revokeAccess(userId) {
 
 // -----------------------------------------------------------------------//
 
-async function grantUser(userId) {
+
+async function deleteUser(userId) 
+{
+  const token = localStorage.getItem("token");
+
+  await fetch("/admin/delete-user", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ userId })
+  });
+
+  loadUsers(); // refresh table
+}
+
+ async function grantUser(userId) 
+ {
   const token = localStorage.getItem("token");
 
   await fetch("/admin/grant-access", {
@@ -277,16 +297,47 @@ async function revokeUser(userId) {
   loadUsers();
 }
 
-function editUser(userId) {
+/* function editUser(userId) {
   alert("Edit user: " + userId);
+} */
+
+async function editUser(userId)
+{
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`/admin/users`, {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  const users = await res.json();
+  const user = users.find(u => u.userId === userId);
+
+  if (!user) return;
+
+  document.getElementById("main").innerHTML = `
+    <h2>Edit User</h2>
+
+    <label>User:</label>
+    <input id="editUserId" value="${user.userId}" disabled>
+
+    <label>Role:</label>
+    <select id="editRole">
+      <option ${user.role==="ADMIN"?"selected":""}>ADMIN</option>
+      <option ${user.role==="USER"?"selected":""}>USER</option>
+    </select>
+
+    <button onclick="saveUserEdit()">Save</button>
+    <button onclick="loadUsers()">Cancel</button>
+  `;
 }
 
+/*
 async function deleteUser(userId) {
   if (!confirm("Delete user " + userId + "?")) return;
 
   const token = localStorage.getItem("token");
 
-  await fetch("/admin/delete-user", {
+  await fetch("admin/delete-user", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -296,4 +347,4 @@ async function deleteUser(userId) {
   });
 
   loadUsers();
-}
+} */

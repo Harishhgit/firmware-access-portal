@@ -67,7 +67,7 @@ async function loadUsers()
     });
 
   } 
-  catch (err) 
+  catch (err)
   {
     console.error("Admin load error:", err);
     statusMessage.textContent = "Failed to load users";

@@ -144,7 +144,9 @@ export const getAllUsers = async (req, res) => {
 
     res.json(users);
 
-  } catch (err) {
+  } 
+  catch (err) 
+  {
     console.error("Get users error:", err);
     res.status(500).json({ message: "Server error" });
   }
@@ -153,7 +155,8 @@ export const getAllUsers = async (req, res) => {
 export const revokeAccess = async (req, res) => {
   const { userId } = req.body;
 
-  if (!userId) {
+  if (!userId) 
+  {
     return res.status(400).json({ message: "userId is required" });
   }
 
@@ -188,3 +191,46 @@ export const revokeAccess = async (req, res) => {
 };
 
 
+export const deleteUser = async (req, res) => 
+{
+  const { userId } = req.body;
+  var name = req.userId; 
+
+  if (!userId)
+    return res.status(400).json({ message: "UserId required" });
+
+  try {
+    const pool = getPool();
+
+    await pool.request()
+      .input("userId", sql.NVarChar, userId)
+      .query("DELETE FROM Users WHERE UserId = @userId");
+
+    res.json({ message: "User deleted", userId });
+
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({ message: "Delete failed" });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const { userId, role } = req.body;
+    const pool = getPool();
+
+    await pool.request()
+      .input("userId", sql.NVarChar, userId)
+      .input("role", sql.NVarChar, role)
+      .query(`
+        UPDATE Users
+        SET Role = @role
+        WHERE UserId = @userId
+      `);
+
+    res.json({ message: "User updated" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Update failed" });
+  }
+};

@@ -74,7 +74,8 @@ async function loadUsers() {
 }
 
 // Grant access
-async function grantAccess(userId) {
+async function grantAccess(userId) 
+{
   await fetch("http://localhost:3000/admin/grant-access", {
     method: "POST",
     headers: {
