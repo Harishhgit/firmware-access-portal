@@ -160,6 +160,7 @@ async function loadUsers()
             <button class="btn-grant" data-userid="${u.userId}">Grant</button>
             <button class="btn-revoke" data-userid="${u.userId}">Revoke</button>
             <button class="btn-edit" data-userid="${u.userId}">Edit</button>
+            <button class="btn-chpass" data-userid="${u.userId}" onclick="changePassword('${u.userId}')">Password</button> 
             <button class="btn-delete" data-userid="${u.userId}">Delete</button>
         </td>
       </tr>
@@ -194,7 +195,28 @@ function attachUserActionEvents()
     btn.addEventListener("click", () => {
       console.log("btn.dataset.userid",btn.dataset.userid,btn.dataset.UserId);
       deleteUser(btn.dataset.userid);
-    });
+    });    
+  });
+
+  document.querySelectorAll(".btn-edit").forEach(btn => {
+    btn.addEventListener("click", () => {
+      console.log("btn.dataset.userid",btn.dataset.UserId);
+      editUser(btn.dataset.userid);
+    });    
+  });
+
+  document.querySelectorAll(".btn-chpass").forEach(btn => {
+    btn.addEventListener("click", () => {
+      console.log("btn.dataset.userid",btn.dataset.UserId);
+      changePassword(btn.dataset.userid);
+    });    
+  });
+
+  document.querySelectorAll(".btn-subpass").forEach(btn => {
+    btn.addEventListener("click", () => {
+      console.log("btn.dataset.userid",btn.dataset.UserId);
+      submitPasswordChange(btn.dataset.userid);
+    });    
   });
 
 }
@@ -252,6 +274,7 @@ async function revokeAccess(userId)
 
 async function deleteUser(userId) 
 {
+  alert("Are you sure you want to delete" + userId);
   const token = localStorage.getItem("token");
 
   await fetch("/admin/delete-user", {
@@ -266,8 +289,8 @@ async function deleteUser(userId)
   loadUsers(); // refresh table
 }
 
- async function grantUser(userId) 
- {
+async function grantUser(userId) 
+{
   const token = localStorage.getItem("token");
 
   await fetch("/admin/grant-access", {
@@ -282,7 +305,8 @@ async function deleteUser(userId)
   loadUsers();
 }
 
-async function revokeUser(userId) {
+async function revokeUser(userId) 
+{
   const token = localStorage.getItem("token");
 
   await fetch("/admin/revoke-access", {
@@ -297,9 +321,6 @@ async function revokeUser(userId) {
   loadUsers();
 }
 
-/* function editUser(userId) {
-  alert("Edit user: " + userId);
-} */
 
 async function editUser(userId)
 {
@@ -329,22 +350,77 @@ async function editUser(userId)
     <button onclick="saveUserEdit()">Save</button>
     <button onclick="loadUsers()">Cancel</button>
   `;
+
 }
 
-/*
-async function deleteUser(userId) {
-  if (!confirm("Delete user " + userId + "?")) return;
-
+async function saveUserEdit()
+{
   const token = localStorage.getItem("token");
 
-  await fetch("admin/delete-user", {
-    method: "DELETE",
+  const userId = document.getElementById("editUserId").value;
+  const role = document.getElementById("editRole").value;
+
+  await fetch("/admin/update-user", {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + token
     },
-    body: JSON.stringify({ userId })
+    body: JSON.stringify({ userId, role })
   });
 
   loadUsers();
-} */
+}
+
+async function changePassword(userId)
+{
+  document.getElementById("main").innerHTML = `
+    <h2>Change Password</h2>
+
+    <label>User:</label>
+    <input id="pwdUserId" value="${userId}" disabled />
+
+    <label>New Password:</label>
+    <input type="password" id="newPassword" />
+
+    <label>Confirm Password:</label>
+    <input type="password" id="confirmPassword" />
+
+    <br><br>
+
+    <button class="btn-subpass" data-userid="${u.userId}">Update Password</button>
+    <button onclick="loadUsers()">Cancel</button>
+  `;
+}
+
+
+  async function submitPasswordChange()
+  {
+    const userId = document.getElementById("pwdUserId").value;
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if(newPassword !== confirmPassword)
+    {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("/admin/change-password",
+    {
+      method: "POST",
+      headers:
+      {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ userId, newPassword })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    loadUsers();
+  }

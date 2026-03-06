@@ -1,4 +1,4 @@
-// ===== Admin Dashboard Logic (Stable Version) =====
+// ===== Admin Dashboard Logic =====
 
 const token = localStorage.getItem("token");
 const role = localStorage.getItem("role");

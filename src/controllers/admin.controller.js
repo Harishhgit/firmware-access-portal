@@ -155,7 +155,7 @@ export const getAllUsers = async (req, res) => {
 export const revokeAccess = async (req, res) => {
   const { userId } = req.body;
 
-  if (!userId) 
+  if (!userId)
   {
     return res.status(400).json({ message: "userId is required" });
   }
@@ -234,3 +234,4 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 };
+
